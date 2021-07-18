@@ -11,6 +11,10 @@ class Linja {
 
 
 function setup() {
+    var peer = new Peer(); 
+    print(peer.id);
+
+
       createCanvas(800, 480);
       vCircle = createVector(150, 400);
       v1 = createVector(40, 50);
