@@ -11,7 +11,7 @@ class Linja {
 
 
 function setup() {
-    var peer = new Peer(); 
+    peer = new Peer(); 
     print(peer.id);
 
 
@@ -40,7 +40,10 @@ function setup() {
 
 function draw() {
       background(220);
-      calculatePositions();
+    textSize(32);
+    text("ID:", 0, 0);
+    text(peer.id, 0, 40);
+    calculatePositions();
       drawMap();
       push();
       translate(vCircle.x, vCircle.y);
