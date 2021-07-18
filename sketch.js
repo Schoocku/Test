@@ -13,6 +13,7 @@ class Linja {
 function setup() {
       createCanvas(800, 480);
       vCircle = createVector(150, 400);
+      vHole = createVector(600, 70);
       v1 = createVector(40, 50);
       vectorVelocity = createVector(0, 0);
       maxPower = 200;
@@ -31,19 +32,14 @@ function setup() {
               new Linja(createVector(640, 300), createVector(700, 240)),
               new Linja(createVector(100, 240), createVector(160, 180))
             ];
-      peerId = "peerId";
-    peer = new Peer();
-    peer.on('open', function(id) {
-          console.log('My peer ID is: ' + id);
-        peerId = id;
-    });
+      peerId = "";
 }
 
 function draw() {
       background(220);
       textSize(32);
       text(peerId, 0, 30);
-      
+      ellipse(vHole.x, vHole.y, 15, 15);
       calculatePositions();
       drawMap();
       push();
@@ -65,6 +61,19 @@ function drawMap() {
       mapLines.forEach(function(item, index, array) {
               item.draw();
             });
+}
+
+function holeCollisionCheck() {
+      dis = distanceBetweenPoints(vCircle, vHole);
+      if (dis < (7.5 + 2)) {
+              currentSpeed = sqrt(pow(vectorVelocity.x, 2) + pow(vectorVelocity.y, 2));
+              if (currentSpeed < 0.45) {
+                        peerId = "Dołek";
+                        vCircle.x = 150;
+                        vCircle.y = 400;
+                        vectorVelocity.set(0);  
+                      }
+            }
 }
 
 function getDistanceFromLine(linja) {
@@ -98,11 +107,12 @@ function calculatePositions() {
               vectorVelocity.x = 0;
               vectorVelocity.y = 0;
               isMoving = false;
-            } 
+            }
       
       vCircle.x = vCircle.x + vectorVelocity.x * deltaTime;
       vCircle.y = vCircle.y + vectorVelocity.y * deltaTime;  
       
+      holeCollisionCheck();
       detectWallCollisions();
       detectLinesCollisions();
       v1.x = mouseX - vCircle.x;
@@ -141,6 +151,8 @@ function detectLinesCollisions() {
       mapLines.forEach(function(item, index, array) {
               dis = getDistanceFromLine(item);
               if (dis <= 5) {
+                        vCircle.x = vCircle.x - vectorVelocity.x * deltaTime;
+                        vCircle.y = vCircle.y - vectorVelocity.y * deltaTime;   
                         calculateBounce(item);
                         applyFriction();
                         return;
