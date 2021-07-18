@@ -164,14 +164,12 @@ function applyFriction() {
 
 
 function mouseClicked() {
-      // currentPower = sqrt(pow((mouseX - vCircle.x),2)+pow((mouseY -
-    // vCircle.y),2));
-    //   if (isMoving) {
-    //       return;
-    //         }
-    //           isMoving = true;
-    //             v1.limit(maxPower);
-    //               vectorVelocity.x = v1.x * 0.004;
-    //                 vectorVelocity.y = v1.y * 0.004;
-    //                 }
-    //
+      if (isMoving) {
+              return;
+            }
+      isMoving = true;
+      v1.limit(maxPower);
+      vectorVelocity.x = v1.x * 0.004;
+      vectorVelocity.y = v1.y * 0.004;
+}
+
