@@ -11,10 +11,6 @@ class Linja {
 
 
 function setup() {
-    peer = new Peer(); 
-    print(peer.id);
-
-
       createCanvas(800, 480);
       vCircle = createVector(150, 400);
       v1 = createVector(40, 50);
@@ -35,15 +31,20 @@ function setup() {
               new Linja(createVector(640, 300), createVector(700, 240)),
               new Linja(createVector(100, 240), createVector(160, 180))
             ];
-      
+      peerId = "peerId";
+    peer = new Peer();
+    peer.on('open', function(id) {
+          console.log('My peer ID is: ' + id);
+        peerId = id;
+    });
 }
 
 function draw() {
       background(220);
-    textSize(32);
-    text("ID:", 0, 0);
-    text(peer.id, 0, 40);
-    calculatePositions();
+      textSize(32);
+      text(peerId, 0, 30);
+      
+      calculatePositions();
       drawMap();
       push();
       translate(vCircle.x, vCircle.y);
