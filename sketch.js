@@ -1,195 +1,29 @@
-class Linja {
-      constructor(point1, point2) {
-              this.point1 = point1;
-              this.point2 = point2;
-            }
-      
-      draw() {
-              line(this.point1.x, this.point1.y, this.point2.x, this.point2.y);
-            }
-}
-
-
 function setup() {
-      createCanvas(800, 480);
-      vCircle = createVector(150, 400);
-      vHole = createVector(600, 70);
-      v1 = createVector(40, 50);
-      vectorVelocity = createVector(0, 0);
-      maxPower = 200;
-      friction = 0.0008;
-      isMoving = false;
-      
-      mapLines = [
-              new Linja(createVector(100, 430), createVector(300, 430)),
-              new Linja(createVector(300, 430), createVector(300, 300)),
-              new Linja(createVector(300, 300), createVector(700, 300)),
-              new Linja(createVector(700, 300), createVector(700, 40)),
-              new Linja(createVector(700, 40), createVector(500, 40)),
-              new Linja(createVector(500, 40), createVector(500, 180)),
-              new Linja(createVector(500, 180), createVector(100, 180)),
-              new Linja(createVector(100, 180), createVector(100, 430)),
-              new Linja(createVector(640, 300), createVector(700, 240)),
-              new Linja(createVector(100, 240), createVector(160, 180))
-            ];
-      peerId = "";
+  backgroundCanvas = new BackgroundCanvas();
+  createCanvas(backgroundCanvas.width, backgroundCanvas.height);
+  testMap = new TestMap();
+  ball = new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y);
+
+  peer = new Peer();
+  peer.on('open', function(id) {
+    console.log('My peer ID is: ' + id);
+  });
 }
 
 function draw() {
-      background(220);
-      textSize(32);
-      text(peerId, 0, 30);
-      ellipse(vHole.x, vHole.y, 15, 15);
-      calculatePositions();
-      drawMap();
-      push();
-      translate(vCircle.x, vCircle.y);
-      noStroke();
-      ellipse(0, 0, 10, 10);
-      if (!isMoving) {
-              stroke(0);
-              line(0, 0, v1.x, v1.y);
-              rotate(v1.heading());
-              arrowSize = 7;
-              translate(v1.mag() - arrowSize, 0);
-              triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);  
-            }
-      pop();
+      background(backgroundCanvas.color);
+      testMap.draw();
+      calculate();
+      ball.draw();
 }
 
-function drawMap() {
-      mapLines.forEach(function(item, index, array) {
-              item.draw();
-            });
+function calculate() {
+  ball.calculate();
+  backgroundCanvas.checkCollision(ball);
+  testMap.checkCollision(ball);
+  applyFriction(ball, backgroundCanvas.friction);
 }
-
-function holeCollisionCheck() {
-      dis = distanceBetweenPoints(vCircle, vHole);
-      if (dis < (7.5 + 2)) {
-              currentSpeed = sqrt(pow(vectorVelocity.x, 2) + pow(vectorVelocity.y, 2));
-              if (currentSpeed < 0.45) {
-                        peerId = "Dołek";
-                        vCircle.x = 150;
-                        vCircle.y = 400;
-                        vectorVelocity.set(0);  
-                      }
-            }
-}
-
-function getDistanceFromLine(linja) {
-      linePoint1 = linja.point1
-      linePoint2 = linja.point2
-      a = linePoint2.x - linePoint1.x;
-      b = linePoint2.y - linePoint1.y;
-      
-      isOnBarrel = a * (vCircle.x - linePoint1.x) + b * (vCircle.y - linePoint1.y);
-      isOnBarrel = isOnBarrel / (pow(a, 2) + pow(b, 2));
-      
-      if (isOnBarrel <= 0) {
-              pointOnLine = createVector(linePoint1.x, linePoint1.y);
-            } else if (isOnBarrel >= 1) {
-                    pointOnLine = createVector(linePoint2.x, linePoint2.y);
-                  } else {
-                          pointOnLine = createVector(linePoint1.x + isOnBarrel * a, linePoint1.y + isOnBarrel * b);
-                        }
-      
-      return distanceBetweenPoints(pointOnLine, vCircle);
-}
-
-function distanceBetweenPoints(point1, point2) {
-      return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2));
-}
-
-function calculatePositions() {
-      applyFriction();
-      
-      if (abs(vectorVelocity.x) < 0.01 && abs(vectorVelocity.y) < 0.01) {
-              vectorVelocity.x = 0;
-              vectorVelocity.y = 0;
-              isMoving = false;
-            }
-      
-      vCircle.x = vCircle.x + vectorVelocity.x * deltaTime;
-      vCircle.y = vCircle.y + vectorVelocity.y * deltaTime;  
-      
-      holeCollisionCheck();
-      detectWallCollisions();
-      detectLinesCollisions();
-      v1.x = mouseX - vCircle.x;
-      v1.y = mouseY - vCircle.y; 
-      v1.limit(maxPower);
-}
- 
-function detectWallCollisions() {
-      if (vCircle.x - 5 <= 0) {
-              vectorVelocity.x *= -1;
-              applyFriction();
-              vCircle.x = 0 + 5;
-              return;
-            }
-      if (vCircle.x + 5 >= 800) {
-              vectorVelocity.x *= -1;
-              applyFriction();
-              vCircle.x = 800 - 5;
-              return;
-            }
-      if (vCircle.y - 5 <= 0) {
-              vectorVelocity.y *= -1;
-              applyFriction();
-              vCircle.y = 0 + 5;
-              return;
-            }
-      if (vCircle.y + 5 >= 480) {
-              vectorVelocity.y *= -1;
-              applyFriction();
-              vCircle.y = 480 - 5;
-              return;
-            }
-}
-
-function detectLinesCollisions() {
-      mapLines.forEach(function(item, index, array) {
-              dis = getDistanceFromLine(item);
-              if (dis <= 5) {
-                        vCircle.x = vCircle.x - vectorVelocity.x * deltaTime;
-                        vCircle.y = vCircle.y - vectorVelocity.y * deltaTime;   
-                        calculateBounce(item);
-                        applyFriction();
-                        return;
-                      }
-            });
-}
-
-
-function calculateBounce(linja, base2) {
-      baseDelta = p5.Vector.sub(linja.point2, linja.point1);
-      baseDelta.normalize();
-      normalOfPlane = createVector(-baseDelta.y, baseDelta.x);
-      
-      vectorVelocity.mult(-1);
-      
-      velocityNormalDot = vectorVelocity.dot(normalOfPlane);
-      
-      vectorVelocity.set(
-              2 * normalOfPlane.x * velocityNormalDot - vectorVelocity.x,
-              2 * normalOfPlane.y * velocityNormalDot - vectorVelocity.y
-            );  
-}
-
-function applyFriction() {
-      xRatio = 1 / (1 + (deltaTime * friction));
-      vectorVelocity.x *= xRatio;
-      vectorVelocity.y *= xRatio;
-}
-
 
 function mouseClicked() {
-      if (isMoving) {
-              return;
-            }
-      isMoving = true;
-      v1.limit(maxPower);
-      vectorVelocity.x = v1.x * 0.004;
-      vectorVelocity.y = v1.y * 0.004;
+  ball.startMoving(mouseX, mouseY);
 }
-
