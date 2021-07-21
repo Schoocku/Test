@@ -5,6 +5,7 @@ class Ball {
     this.center = createVector(x, y);
     this.velocity = createVector(0, 0);
     this.r = 5;
+    this.mass = 1;
     this.distanceToHole = 2;
     this.isMoving = false;
     this.arrowVector = createVector(0, 0);
@@ -134,7 +135,7 @@ class Ball {
   }
 
   checkLineCrossing(lineToCheck) {
-    if (doLineCross(lineToCheck, new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
+    if (lineToCheck.isLineCrossing(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
       return true;
     }
     return false;
@@ -159,6 +160,32 @@ class Ball {
     let xRatio = 1 / (1 + (deltaTime * friction));
     this.velocity.x *= xRatio;
     this.velocity.y *= xRatio;
+  }
+
+  correctBallPositions(ball) {
+    let ballsDistance = distanceBetweenPoints(this.center, ball.center);
+    if (ballsDistance < (this.r + ball.r)) {
+      let overlap = 0.5 * (ballsDistance - this.r + ball.r);
+      this.center.x -= overlap * (this.center.x - ball.center.x) / ballsDistance;
+      this.center.y -= overlap * (this.center.y - ball.center.y) / ballsDistance;
+
+      ball.center.x += overlap * (this.center.x - ball.center.x) / ballsDistance;
+      ball.center.y += overlap * (this.center.y - ball.center.y) / ballsDistance;
+    }
+  }
+
+  calculateBallsCollision(ball) {
+    let ballsDistance = distanceBetweenPoints(this.center, ball.center);
+    let nx = (ball.center.x - this.center.x) / ballsDistance
+    let ny = (ball.center.y - this.center.y) / ballsDistance
+    let kx = (this.velocity.x - ball.velocity.x);
+    let ky = (this.velocity.y - ball.velocity.y);
+    let p = 2.0 * (nx * kx + ny * ky) / (this.mass + ball.mass);
+    this.velocity.x = this.velocity.x - p * ball.mass * nx;
+    this.velocity.y = this.velocity.y - p * ball.mass * ny;
+
+    ball.velocity.x = ball.velocity.x + p * this.mass * nx;
+    ball.velocity.y = ball.velocity.x + p * this.mass * ny;
   }
 
 }

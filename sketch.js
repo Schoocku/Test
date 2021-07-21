@@ -2,7 +2,11 @@ function setup() {
   backgroundCanvas = new BackgroundCanvas();
   createCanvas(backgroundCanvas.width, backgroundCanvas.height);
   testMap = new TestMap();
-  ball = new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y);
+  balls = [
+    new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y),
+    // new Ball(300, 200)
+  ]
+  // balls[1].isCurrentTurn = false;
 
   peer = new Peer();
   peer.on('open', function(id) {
@@ -14,16 +18,31 @@ function draw() {
   background(backgroundCanvas.color);
   testMap.draw();
   calculatePositions();
-  ball.draw();
+  balls.forEach((ball, i) => {
+    ball.draw();
+  });
 }
 
 function calculatePositions() {
-  ball.calculateNextPosition();
-  backgroundCanvas.checkCollision(ball);
-  testMap.checkCollision(ball);
-  ball.applyFriction(backgroundCanvas.friction);
+  balls.forEach((target, i) => {
+    balls.forEach((ball, i) => {
+      if (target != ball) {
+        ball.correctBallPositions(target);
+      }
+    });
+  });
+  balls.forEach((ball, i) => {
+    ball.calculateNextPosition();
+    if (ball.isMoving){
+      backgroundCanvas.checkCollision(ball);
+      testMap.checkCollision(ball);
+    }
+    ball.applyFriction(backgroundCanvas.friction);
+  });
 }
 
 function mouseClicked() {
-  ball.startMoving(mouseX, mouseY);
+  balls.forEach((ball, i) => {
+      ball.startMoving(mouseX, mouseY);
+  });
 }
