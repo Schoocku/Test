@@ -120,11 +120,11 @@ class Ball {
           minPrevDistance = closestLine.prevBallDistance;
         }
       }, this);
-      this.correctPosition(this.distanceTraveled, this.r + closestPrevLine.ballDistance);
+      this.correctPosition(this.distanceTraveled, closestPrevLine.prevBallDistance - this.r);
       return closestLine;
     } else {
       if (closestLine.ballDistance < this.r) {
-        this.correctPosition(this.distanceTraveled, this.r - closestLine.ballDistance);
+        this.correctPosition(this.distanceTraveled, closestLine.prevBallDistance - this.r);
         return closestLine;
       } else if (closestLine.ballDistance == this.r) {
         return closestLine;
@@ -144,11 +144,21 @@ class Ball {
     if (distanceTraveled == 0) {
       return;
     }
-    let reduceFactor = abs((distanceTraveled - distanceToMove) / distanceTraveled);
-    this.center.x -= (this.lastVelocity.x - (this.lastVelocity.x * reduceFactor));
-    this.center.y -= (this.lastVelocity.y - (this.lastVelocity.y * reduceFactor));
+    let reduceFactor = abs(distanceToMove / distanceTraveled);
+    this.center.x = this.prevCenter.x + (this.lastVelocity.x * reduceFactor);
+    this.center.y = this.prevCenter.y + (this.lastVelocity.y * reduceFactor);
     this.prevCenter.x = this.center.x;
     this.prevCenter.y = this.center.y;
+  }
+
+  stop() {
+    this.velocity.set(0);
+  }
+
+  applyFriction(friction) {
+    let xRatio = 1 / (1 + (deltaTime * friction));
+    this.velocity.x *= xRatio;
+    this.velocity.y *= xRatio;
   }
 
 }

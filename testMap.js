@@ -28,24 +28,9 @@ class TestMap {
     this.hole.checkCollision(ball);
     let lineColliding = ball.checkCollisionWithLines(this.mapLines);
     if (lineColliding != null) {
-      this.calculateBounce(lineColliding, ball);
-      applyFriction(ball, this.friction);
+      lineColliding.calculateBounce(ball);
+      ball.applyFriction(this.friction);
     }
-  }
-
-  calculateBounce(lineToCheck, ball) {
-    let baseDelta = p5.Vector.sub(lineToCheck.point2, lineToCheck.point1);
-    baseDelta.normalize();
-    let normalOfPlane = createVector(-baseDelta.y, baseDelta.x);
-
-    ball.velocity.mult(-1);
-
-    let velocityNormalDot = ball.velocity.dot(normalOfPlane);
-
-    ball.velocity.set(
-      2 * normalOfPlane.x * velocityNormalDot - ball.velocity.x,
-      2 * normalOfPlane.y * velocityNormalDot - ball.velocity.y
-    );
   }
 
 }

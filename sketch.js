@@ -11,17 +11,17 @@ function setup() {
 }
 
 function draw() {
-      background(backgroundCanvas.color);
-      testMap.draw();
-      calculatePositions();
-      ball.draw();
+  background(backgroundCanvas.color);
+  testMap.draw();
+  calculatePositions();
+  ball.draw();
 }
 
 function calculatePositions() {
   ball.calculateNextPosition();
   backgroundCanvas.checkCollision(ball);
   testMap.checkCollision(ball);
-  applyFriction(ball, backgroundCanvas.friction);
+  ball.applyFriction(backgroundCanvas.friction);
 }
 
 function mouseClicked() {

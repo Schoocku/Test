@@ -1,30 +1,6 @@
-function getDistanceFromLine(lineToCheck, pointToCheck) {
-  a = lineToCheck.point2.x - lineToCheck.point1.x;
-  b = lineToCheck.point2.y - lineToCheck.point1.y;
-
-  isOnLine = a * (pointToCheck.x - lineToCheck.point1.x) + b * (pointToCheck.y - lineToCheck.point1.y);
-  isOnLine = isOnLine / (pow(a, 2) + pow(b, 2));
-
-  if (isOnLine <= 0) {
-    pointOnLine = createVector(lineToCheck.point1.x, lineToCheck.point1.y);
-  } else if (isOnLine >= 1) {
-    pointOnLine = createVector(lineToCheck.point2.x, lineToCheck.point2.y);
-  } else {
-    pointOnLine = createVector(lineToCheck.point1.x + isOnLine * a, lineToCheck.point1.y + isOnLine * b);
-  }
-
-  return distanceBetweenPoints(pointOnLine, pointToCheck);
-
-}
 
 function distanceBetweenPoints(point1, point2) {
   return sqrt(pow(point2.x - point1.x, 2) + pow(point2.y - point1.y, 2));
-}
-
-function applyFriction(ball, friction) {
-  xRatio = 1 / (1 + (deltaTime * friction));
-  ball.velocity.x *= xRatio;
-  ball.velocity.y *= xRatio;
 }
 
 function doLineCross(lineToCheck1, lineToCheck2) {
