@@ -26,12 +26,11 @@ class TestMap {
 
   checkCollision(ball) {
     this.hole.checkCollision(ball);
-    this.mapLines.forEach(function(item, index, array) {
-      if (ball.checkCollisionWithLine(item)) {
-        this.calculateBounce(item, ball);
-        applyFriction(ball, this.friction);
-      }
-    }, this);
+    let lineColliding = ball.checkCollisionWithLines(this.mapLines);
+    if (lineColliding != null) {
+      this.calculateBounce(lineColliding, ball);
+      applyFriction(ball, this.friction);
+    }
   }
 
   calculateBounce(lineToCheck, ball) {

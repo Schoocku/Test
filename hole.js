@@ -17,6 +17,8 @@ class Hole {
         // TODO
         ball.center.x = 150
         ball.center.y = 400;
+        ball.prevCenter.x = ball.center.x;
+        ball.prevCenter.y = ball.center.y;
         ball.velocity.set(0);
       }
     }

@@ -13,12 +13,12 @@ function setup() {
 function draw() {
       background(backgroundCanvas.color);
       testMap.draw();
-      calculate();
+      calculatePositions();
       ball.draw();
 }
 
-function calculate() {
-  ball.calculate();
+function calculatePositions() {
+  ball.calculateNextPosition();
   backgroundCanvas.checkCollision(ball);
   testMap.checkCollision(ball);
   applyFriction(ball, backgroundCanvas.friction);

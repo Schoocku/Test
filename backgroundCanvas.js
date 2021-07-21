@@ -3,7 +3,7 @@ class BackgroundCanvas {
     this.friction = 0.0008;
     this.width = 800;
     this.height = 480;
-    this.color = "rgb(13, 220, 46)";
+    this.color = "rgb(190, 190, 190)";
   }
 
   checkCollision(ball) {
