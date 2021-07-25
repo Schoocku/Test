@@ -4,9 +4,10 @@ function setup() {
   testMap = new TestMap();
   balls = [
     new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y),
-    // new Ball(300, 200)
+    new Ball(300, 200)
   ]
-  // balls[1].isCurrentTurn = false;
+  balls[1].isCurrentTurn = false;
+  balls[1].color = "#ff0000";
 
   peer = new Peer();
   peer.on('open', function(id) {

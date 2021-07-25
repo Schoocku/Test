@@ -5,10 +5,11 @@ class Line {
     this.prevBallDistance = 0;
     this.ballDistance = 0;
     this.rotateBounce = false;
+    this.color = color("#000000");
   }
 
   draw() {
-    stroke(0, 0, 0);
+    stroke(this.color);
     line(this.point1.x, this.point1.y, this.point2.x, this.point2.y);
   }
 
@@ -43,9 +44,7 @@ class Line {
   calculateBounce(ball) {
     this.ballDistance = this.getDistanceFromPoint(ball.center);
 
-    let baseDelta = p5.Vector.sub(this.point2, this.point1);
-    baseDelta.normalize();
-    let normalOfPlane = createVector(-baseDelta.y, baseDelta.x);
+    let normalOfPlane = this.getNormal()
 
     ball.velocity.mult(-1);
 
@@ -59,6 +58,12 @@ class Line {
     if (this.rotateBounce) {
       this.rotateVector180(ball.velocity);
     }
+  }
+
+  getNormal() {
+    let baseDelta = p5.Vector.sub(this.point2, this.point1);
+    baseDelta.normalize();
+    return createVector(-baseDelta.y, baseDelta.x);
   }
 
   rotateVector180(vectorToRotate){

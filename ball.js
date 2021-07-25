@@ -16,6 +16,7 @@ class Ball {
     this.isVisible = true;
     this.isCurrentTurn = true;
     this.distanceTraveled = 0;
+    this.color = color("#ffff00");
   }
 
   draw() {
@@ -24,10 +25,12 @@ class Ball {
     }
     push();
     translate(this.center.x, this.center.y);
+    fill(this.color);
     noStroke();
     ellipse(0, 0, this.r * 2, this.r * 2);
     if (!this.isMoving && this.isCurrentTurn) {
       stroke(0);
+      fill(0);
       line(0, 0, this.arrowVector.x, this.arrowVector.y);
       rotate(this.arrowVector.heading());
       translate(this.arrowVector.mag() - this.arrowSize, 0);
@@ -121,11 +124,11 @@ class Ball {
           minPrevDistance = closestLine.prevBallDistance;
         }
       }, this);
-      this.correctPosition(this.distanceTraveled, closestPrevLine.prevBallDistance - this.r);
+      this.correctPosition(closestPrevLine.prevBallDistance - this.r);
       return closestLine;
     } else {
       if (closestLine.ballDistance < this.r) {
-        this.correctPosition(this.distanceTraveled, closestLine.prevBallDistance - this.r);
+        this.correctPosition(closestLine.prevBallDistance - this.r);
         return closestLine;
       } else if (closestLine.ballDistance == this.r) {
         return closestLine;
@@ -141,11 +144,11 @@ class Ball {
     return false;
   }
 
-  correctPosition(distanceTraveled, distanceToMove) {
-    if (distanceTraveled == 0) {
+  correctPosition(distanceToMove) {
+    if (this.distanceTraveled == 0) {
       return;
     }
-    let reduceFactor = abs(distanceToMove / distanceTraveled);
+    let reduceFactor = abs(distanceToMove / this.distanceTraveled);
     this.center.x = this.prevCenter.x + (this.lastVelocity.x * reduceFactor);
     this.center.y = this.prevCenter.y + (this.lastVelocity.y * reduceFactor);
     this.prevCenter.x = this.center.x;
@@ -165,13 +168,19 @@ class Ball {
   correctBallPositions(ball) {
     let ballsDistance = distanceBetweenPoints(this.center, ball.center);
     if (ballsDistance < (this.r + ball.r)) {
-      let overlap = 0.5 * (ballsDistance - this.r + ball.r);
-      this.center.x -= overlap * (this.center.x - ball.center.x) / ballsDistance;
-      this.center.y -= overlap * (this.center.y - ball.center.y) / ballsDistance;
-
-      ball.center.x += overlap * (this.center.x - ball.center.x) / ballsDistance;
-      ball.center.y += overlap * (this.center.y - ball.center.y) / ballsDistance;
+      let prevBallDistance = distanceBetweenPoints(this.prevCenter, ball.center);
+      console.log(prevBallDistance);
+      this.correctPosition(prevBallDistance - this.r - ball.r);
+      this.calculateBallsCollision(ball);
+      // let overlap = 0.5 * (ballsDistance - this.r + ball.r);
+      // this.center.x -= overlap * (this.center.x - ball.center.x) / ballsDistance;
+      // this.center.y -= overlap * (this.center.y - ball.center.y) / ballsDistance;
+      //
+      // ball.center.x += overlap * (this.center.x - ball.center.x) / ballsDistance;
+      // ball.center.y += overlap * (this.center.y - ball.center.y) / ballsDistance;
+      // this.stop()
     }
+
   }
 
   calculateBallsCollision(ball) {
