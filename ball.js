@@ -165,36 +165,48 @@ class Ball {
     this.velocity.y *= xRatio;
   }
 
-  correctBallPositions(ball) {
+  correctBallPositions(ball, collisionsPairs) {
     let ballsDistance = distanceBetweenPoints(this.center, ball.center);
     if (ballsDistance < (this.r + ball.r)) {
       let prevBallDistance = distanceBetweenPoints(this.prevCenter, ball.center);
-      console.log(prevBallDistance);
-      this.correctPosition(prevBallDistance - this.r - ball.r);
-      this.calculateBallsCollision(ball);
-      // let overlap = 0.5 * (ballsDistance - this.r + ball.r);
-      // this.center.x -= overlap * (this.center.x - ball.center.x) / ballsDistance;
-      // this.center.y -= overlap * (this.center.y - ball.center.y) / ballsDistance;
-      //
-      // ball.center.x += overlap * (this.center.x - ball.center.x) / ballsDistance;
-      // ball.center.y += overlap * (this.center.y - ball.center.y) / ballsDistance;
-      // this.stop()
+      collisionsPairs.push([this, ball]);
+      if (ballsDistance != 0) {
+        let overlap = 0.5 * (ballsDistance - this.r - ball.r);
+        this.center.x -= overlap * (this.center.x - ball.center.x) / ballsDistance;
+  			this.center.y -= overlap * (this.center.y - ball.center.y) / ballsDistance;
+  			ball.center.x += overlap * (this.center.x - ball.center.x) / ballsDistance;
+  			ball.center.y += overlap * (this.center.y - ball.center.y) / ballsDistance;
+      }
     }
-
   }
 
   calculateBallsCollision(ball) {
+    let lineBallCenters = new Line(this.center.x, this.center.y, ball.center.x, ball.center.y);
+    let lineBallCentersNormal = lineBallCenters.getNormal();
     let ballsDistance = distanceBetweenPoints(this.center, ball.center);
-    let nx = (ball.center.x - this.center.x) / ballsDistance
-    let ny = (ball.center.y - this.center.y) / ballsDistance
-    let kx = (this.velocity.x - ball.velocity.x);
-    let ky = (this.velocity.y - ball.velocity.y);
-    let p = 2.0 * (nx * kx + ny * ky) / (this.mass + ball.mass);
-    this.velocity.x = this.velocity.x - p * ball.mass * nx;
-    this.velocity.y = this.velocity.y - p * ball.mass * ny;
+    // let nx = lineBallCentersNormal.x;
+    // let ny = lineBallCentersNormal.y;
 
-    ball.velocity.x = ball.velocity.x + p * this.mass * nx;
-    ball.velocity.y = ball.velocity.x + p * this.mass * ny;
+    let nx = (ball.center.x - this.center.x) / ballsDistance;
+    let ny = (ball.center.y - this.center.y) / ballsDistance;
+
+    let kx = (this.velocity.x - ball.velocity.x);
+		let ky = (this.velocity.y - ball.velocity.y);
+		let p = 2.0 * (nx * kx + ny * ky) / (this.mass + ball.mass);
+		this.velocity.x = this.velocity.x - p * ball.mass * nx;
+		this.velocity.y = this.velocity.y - p * ball.mass * ny;
+		ball.velocity.x = ball.velocity.x + p * this.mass * nx;
+		ball.velocity.y = ball.velocity.y + p * this.mass * ny;
+
+    // let newVelX1 = (this.velocity.x * (this.mass - ball.mass) + (2 * ball.mass * ball.velocity.x)) / (this.mass + ball.mass);
+    // let newVelY1 = (this.velocity.y * (this.mass - ball.mass) + (2 * ball.mass * ball.velocity.y)) / (this.mass + ball.mass);
+    // let newVelX2 = (ball.velocity.x * (ball.mass - this.mass) + (2 * this.mass * this.velocity.x)) / (this.mass + ball.mass);
+    // let newVelY2 = (ball.velocity.y * (ball.mass - this.mass) + (2 * this.mass * this.velocity.y)) / (this.mass + ball.mass);
+    // this.center.x = this.center.x + newVelX1;
+    // this.center.y = this.center.y + newVelY1;
+    // ball.center.x = ball.center.x + newVelX2;
+    // ball.center.y = ball.center.y + newVelY2;
+
   }
 
 }

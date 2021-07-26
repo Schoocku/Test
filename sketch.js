@@ -4,10 +4,16 @@ function setup() {
   testMap = new TestMap();
   balls = [
     new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y),
-    new Ball(300, 200)
+    new Ball(150, 350),
+    new Ball(170, 350),
+    new Ball(400, 230),
+    new Ball(650, 150),
+    new Ball(170, 270),
   ]
-  balls[1].isCurrentTurn = false;
-  balls[1].color = "#ff0000";
+  for (i = 1; i < balls.length; i++) {
+    balls[i].isCurrentTurn = false;
+    balls[i].color = "#ff0000";
+  }
 
   peer = new Peer();
   peer.on('open', function(id) {
@@ -25,12 +31,16 @@ function draw() {
 }
 
 function calculatePositions() {
+  collisionsPairs = []
   balls.forEach((target, i) => {
     balls.forEach((ball, i) => {
       if (target != ball) {
-        ball.correctBallPositions(target);
+        ball.correctBallPositions(target, collisionsPairs);
       }
     });
+  });
+  collisionsPairs.forEach(function(collisionPair, index, array) {
+    collisionPair[0].calculateBallsCollision(collisionPair[1]);
   });
   balls.forEach((ball, i) => {
     ball.calculateNextPosition();
