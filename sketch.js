@@ -14,7 +14,6 @@ function setup() {
     balls[i].isCurrentTurn = false;
     balls[i].color = "#ff0000";
   }
-
   peer = new Peer();
   peer.on('open', function(id) {
     console.log('My peer ID is: ' + id);
@@ -32,8 +31,8 @@ function draw() {
 
 function calculatePositions() {
   collisionsPairs = []
-  balls.forEach((target, i) => {
-    balls.forEach((ball, i) => {
+  balls.forEach((ball, i) => {
+    balls.forEach((target, i) => {
       if (target != ball) {
         ball.correctBallPositions(target, collisionsPairs);
       }
@@ -53,6 +52,7 @@ function calculatePositions() {
 }
 
 function mouseClicked() {
+  console.log(mouseX, mouseY);
   balls.forEach((ball, i) => {
       ball.startMoving(mouseX, mouseY);
   });

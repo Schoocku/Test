@@ -4,7 +4,9 @@ class Line {
     this.point2 = createVector(x2, y2);
     this.prevBallDistance = 0;
     this.ballDistance = 0;
-    this.rotateBounce = false;
+    this.point1Distance = false;
+    this.point2Distance = false;
+    this.pointOnLine = createVector();
     this.color = color("#000000");
   }
 
@@ -25,19 +27,21 @@ class Line {
     let isOnLine = a * (pointToCheck.x - this.point1.x) + b * (pointToCheck.y - this.point1.y);
     isOnLine = isOnLine / (pow(a, 2) + pow(b, 2));
 
-    let pointOnLine = createVector();
     if (isOnLine <= 0) {
-      pointOnLine.set(this.point1.x, this.point1.y);
-      this.rotateBounce = true;
+      this.pointOnLine.set(this.point1.x, this.point1.y);
+      this.point1Distance = true;
+      this.point2Distance = false;
     } else if (isOnLine >= 1) {
-      pointOnLine.set(this.point2.x, this.point2.y);
-      this.rotateBounce = true;
+      this.pointOnLine.set(this.point2.x, this.point2.y);
+      this.point1Distance = false;
+      this.point2Distance = true;
     } else {
-      pointOnLine.set(this.point1.x + isOnLine * a, this.point1.y + isOnLine * b);
-      this.rotateBounce = false;
+      this.pointOnLine.set(this.point1.x + isOnLine * a, this.point1.y + isOnLine * b);
+      this.point1Distance = false;
+      this.point2Distance = false;
     }
 
-    return distanceBetweenPoints(pointOnLine, pointToCheck);
+    return distanceBetweenPoints(this.pointOnLine, pointToCheck);
 
   }
 
@@ -55,7 +59,7 @@ class Line {
       2 * normalOfPlane.y * velocityNormalDot - ball.velocity.y
     );
 
-    if (this.rotateBounce) {
+    if (this.point1Distance || this.point2Distance) {
       this.rotateVector180(ball.velocity);
     }
   }
