@@ -118,13 +118,16 @@ class Ball {
     if (linesCrossing.length > 0) {
       let closestPrevLine = linesCrossing[0];
       minPrevDistance = closestLine.prevBallDistance;
-      linesToCheck.forEach(function(item, index, array) {
+      linesCrossing.forEach(function(item, index, array) {
         if (item.prevBallDistance < minDistance) {
           closestPrevLine = item;
           minPrevDistance = closestLine.prevBallDistance;
         }
       }, this);
-      this.correctPosition(closestPrevLine.prevBallDistance - this.r);
+      // this.center.x = closestPrevLine.intersectionPoint.x;
+      // this.center.y = closestPrevLine.intersectionPoint.y;
+      let tempDistance = distanceBetweenPoints(this.center, closestPrevLine.intersectionPoint);
+      this.correctPosition(tempDistance - this.r);
       return closestLine;
     } else {
       if (closestLine.ballDistance < this.r) {
@@ -138,7 +141,9 @@ class Ball {
   }
 
   checkLineCrossing(lineToCheck) {
-    if (lineToCheck.isLineCrossing(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
+    // if (lineToCheck.isLineCrossing(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
+    if (lineToCheck.intersectionCheck(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
+      console.log("intersection");
       return true;
     }
     return false;
