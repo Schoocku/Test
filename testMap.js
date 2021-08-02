@@ -28,9 +28,6 @@ class TestMap {
     this.hole.checkCollision(ball);
     let lineColliding = ball.checkCollisionWithLines(this.mapLines);
     if (lineColliding != null) {
-      console.log("Distance:" + lineColliding.getDistanceFromPoint(ball.center));
-      ball.stop();
-      return;
       lineColliding.calculateBounce(ball);
       ball.applyFriction(this.friction);
     }

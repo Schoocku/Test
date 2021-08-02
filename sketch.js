@@ -4,11 +4,11 @@ function setup() {
   testMap = new TestMap();
   balls = [
     new Ball(testMap.ballStartPosition.x, testMap.ballStartPosition.y),
-    // new Ball(150, 350),
-    // new Ball(170, 350),
-    // new Ball(400, 230),
-    // new Ball(650, 150),
-    // new Ball(170, 270),
+    new Ball(150, 350),
+    new Ball(170, 350),
+    new Ball(400, 230),
+    new Ball(650, 150),
+    new Ball(170, 270),
   ]
   for (i = 1; i < balls.length; i++) {
     balls[i].isCurrentTurn = false;

@@ -117,21 +117,22 @@ class Ball {
 
     if (linesCrossing.length > 0) {
       let closestPrevLine = linesCrossing[0];
-      minPrevDistance = closestLine.prevBallDistance;
+      minPrevDistance = closestPrevLine.prevBallDistance;
       linesCrossing.forEach(function(item, index, array) {
         if (item.prevBallDistance < minDistance) {
           closestPrevLine = item;
           minPrevDistance = closestLine.prevBallDistance;
         }
       }, this);
-      // this.center.x = closestPrevLine.intersectionPoint.x;
-      // this.center.y = closestPrevLine.intersectionPoint.y;
-      let tempDistance = distanceBetweenPoints(this.center, closestPrevLine.intersectionPoint);
-      this.correctPosition(tempDistance - this.r);
-      return closestLine;
+      let distanceToCrossingPoint = distanceBetweenPoints(this.center, closestPrevLine.intersectionPoint);
+      let distanceToSubstract = ((closestPrevLine.ballDistance + this.r) * distanceToCrossingPoint);
+      distanceToSubstract /= closestPrevLine.ballDistance
+      this.correctPosition(this.distanceTraveled - distanceToSubstract);
+      return closestPrevLine;
     } else {
       if (closestLine.ballDistance < this.r) {
-        this.correctPosition(closestLine.prevBallDistance - this.r);
+        let distanceToSubstract = this.r - closestLine.ballDistance;
+        this.correctPosition(this.distanceTraveled - distanceToSubstract);
         return closestLine;
       } else if (closestLine.ballDistance == this.r) {
         return closestLine;
@@ -141,23 +142,19 @@ class Ball {
   }
 
   checkLineCrossing(lineToCheck) {
-    // if (lineToCheck.isLineCrossing(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
     if (lineToCheck.intersectionCheck(new Line(this.prevCenter.x, this.prevCenter.y, this.center.x, this.center.y))) {
-      console.log("intersection");
       return true;
     }
     return false;
   }
 
-  correctPosition(distanceToMove) {
+  correctPosition(newDistance) {
     if (this.distanceTraveled == 0) {
       this.distanceTraveled = 1;
     }
-    let reduceFactor = abs(distanceToMove / this.distanceTraveled);
+    let reduceFactor = abs(newDistance / this.distanceTraveled);
     this.center.x = this.prevCenter.x + (this.lastVelocity.x * reduceFactor);
     this.center.y = this.prevCenter.y + (this.lastVelocity.y * reduceFactor);
-    // this.prevCenter.x = this.center.x;
-    // this.prevCenter.y = this.center.y;
   }
 
   stop() {
