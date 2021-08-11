@@ -124,14 +124,21 @@ class Ball {
           minPrevDistance = closestLine.prevBallDistance;
         }
       }, this);
-      let distanceToCrossingPoint = distanceBetweenPoints(this.center, closestPrevLine.intersectionPoint);
-      let distanceToSubstract = ((closestPrevLine.ballDistance + this.r) * distanceToCrossingPoint);
-      distanceToSubstract /= closestPrevLine.ballDistance
+      let prevBallD = closestLine.prevBallDistance;
+      let currBallD = closestLine.ballDistance;
+      let distTrav = this.distanceTraveled;
+      let distanceToSubstract = (this.r + currBallD) * distTrav;
+      distanceToSubstract = distanceToSubstract / (prevBallD + currBallD)
       this.correctPosition(this.distanceTraveled - distanceToSubstract);
       return closestPrevLine;
     } else {
       if (closestLine.ballDistance < this.r) {
-        let distanceToSubstract = this.r - closestLine.ballDistance;
+
+        let prevBallD = closestLine.prevBallDistance;
+        let currBallD = closestLine.ballDistance;
+        let distTrav = this.distanceTraveled;
+        let distanceToSubstract = (this.r - currBallD) * distTrav;
+        distanceToSubstract = distanceToSubstract / (prevBallD - currBallD)
         this.correctPosition(this.distanceTraveled - distanceToSubstract);
         return closestLine;
       } else if (closestLine.ballDistance == this.r) {
